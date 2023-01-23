@@ -14,6 +14,8 @@ public class CarrierStrategy {
     static boolean anchorMode = false;
     static int numHeadquarters = 0;
 
+    static int optimalAmount;
+
     /**
      * Run a single turn for a Carrier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
@@ -25,15 +27,15 @@ public class CarrierStrategy {
         if(hqLoc == null) scanHQ(rc);
         if(wellLoc == null) scanWells(rc);
         scanIslands(rc);
+        System.out.println(wellLoc);
 
         //Collect from well if close and inventory not full
-        int distance = (int) Math.sqrt(rc.getLocation().distanceSquaredTo(wellLoc));
-        int optimalAmount = getOptimalResourceCount(distance, well.isUpgraded());
         if(wellLoc != null) {
-            System.out.println(String.format("The Distance is: %d", distance));
-            System.out.println(String.format("The resource count is: %d", optimalAmount));
-
-            if(rc.canCollectResource(wellLoc, -1)) rc.collectResource(wellLoc, optimalAmount);
+            int distance = (int) Math.sqrt(rc.getLocation().distanceSquaredTo(wellLoc));
+            optimalAmount = getOptimalResourceCount(distance, well.isUpgraded());
+            if(rc.canCollectResource(wellLoc, -1) && getTotalResources(rc) < optimalAmount) {
+                rc.collectResource(wellLoc, -1); /**MAYBE ITS TRYING TO COLLECT OPTIMAL AMOUNT EACH TIME AND GETTING CONFUSED?*/
+            }
         }
 
         //Transfer resource to headquarters
@@ -71,8 +73,9 @@ public class CarrierStrategy {
                 if(wellLoc == null) RobotPlayer.moveRandom(rc); //COULD BE COOL TO KEEP A LOG OF THE PREVIOUS STEPS TO MAKE REPEATING STEPS STOP HAPPENING
                 else if(!rc.getLocation().isAdjacentTo(wellLoc)) Pathing.moveTowards(rc, wellLoc);
             }
-            else if (total==optimalAmount){
+            if (total==optimalAmount){ /**just changed this from else if to else*/
                 //move towards HQ
+                System.out.println("MOVING TOWARD HQ BITCH");
                 Pathing.moveTowards(rc, hqLoc);
             }
         }
