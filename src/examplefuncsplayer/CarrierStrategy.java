@@ -75,7 +75,6 @@ public class CarrierStrategy {
             }
             if (total==optimalAmount){ /**just changed this from else if to else*/
                 //move towards HQ
-                System.out.println("MOVING TOWARD HQ BITCH");
                 Pathing.moveTowards(rc, hqLoc);
             }
         }
@@ -115,7 +114,7 @@ public class CarrierStrategy {
                 if(rc.getLocation().distanceSquaredTo(wellLoc) > rc.getLocation().distanceSquaredTo(wells[i].getMapLocation())) { //*Note! getMapLocation is for wells, getLocation is for robots*//
                     wellLoc = wells[i].getMapLocation();
                     well = wells[i];
-                    /**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST WELL**/
+                    /**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST WELL**/ /**FIX THIS SHIT*/
                     /**Also, updates well so we actually get a well info object*/
                 }
             }
