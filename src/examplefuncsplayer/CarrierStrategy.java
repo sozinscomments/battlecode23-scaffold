@@ -74,6 +74,7 @@ public class CarrierStrategy {
                 RobotPlayer.moveTowards(rc, hqLoc);
             }
         }
+
         Communication.tryWriteMessages(rc);
     }
 
@@ -98,7 +99,7 @@ public class CarrierStrategy {
                 hqLoc = robot.getLocation();
                 break;
             }
-        }**/ /**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST HQ. THIS COULD BE COMPUTATIONALLY EXPENSIVE BECAUSE THERE ARE A LOT OF ROBOTS, SO MAYBE GO BACK TO ORIGINAL AT SOME POINT**/
+        }**/ /**IMPROVEMENT SEAN MADE: WILL CHOOSE THE NEAREST HQ. THIS COULD BE COMPUTATIONALLY EXPENSIVE BECAUSE THERE ARE A LOT OF ROBOTS, SO MAYBE GO BACK TO ORIGINAL AT SOME POINT**/
     }
 
     static void scanWells(RobotController rc) throws GameActionException {

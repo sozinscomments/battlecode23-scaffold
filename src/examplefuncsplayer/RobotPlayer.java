@@ -80,7 +80,7 @@ public strictfp class RobotPlayer {
                     case LAUNCHER: LauncherStrategy.runLauncher(rc); break;
                     case BOOSTER: // Examplefuncsplayer doesn't use any of these robot types below.
                     case DESTABILIZER: // You might want to give them a try!
-                    case AMPLIFIER:       break;
+                    case AMPLIFIER: AmplifierStrategy.runAmplifier(rc);       break;
                 }
 
             } catch (GameActionException e) {
@@ -131,7 +131,14 @@ public strictfp class RobotPlayer {
             if (rc.canBuildRobot(RobotType.CARRIER, newLoc)) {
                 rc.buildRobot(RobotType.CARRIER, newLoc);
             }
-        } else {
+        //from there, has a 1/6 chance of building an amplifier
+        } else if (rng.nextInt(6)==0){
+            if (rc.canBuildRobot(RobotType.AMPLIFIER, newLoc) && rc.getResourceAmount(ResourceType.ADAMANTIUM) > 40 && rc.getResourceAmount(ResourceType.MANA) > 40) {
+                rc.buildRobot(RobotType.AMPLIFIER, newLoc);
+            }
+            rc.setIndicatorString("Trying to build an amplifier");
+
+        }   else {
             // Let's try to build a launcher.
             if (rc.getActionCooldownTurns() != 0 || rc.getResourceAmount(ResourceType.MANA) < 5 * RobotType.LAUNCHER.buildCostMana) /**SEAN'S NOTE: This second condition is do we not have much mana compared to the amount it takes to build a launcher, can wiggle these parameters*/
                 return;
@@ -150,6 +157,7 @@ public strictfp class RobotPlayer {
             }
             rc.setIndicatorString("Trying to build a launcher");
         }
+        // (alaysia to do): late-game strategies that focus on saving up resources and making larger purchases
         Communication.tryWriteMessages(rc);
 
     }
