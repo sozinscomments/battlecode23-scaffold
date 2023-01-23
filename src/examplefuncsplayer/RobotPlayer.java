@@ -132,7 +132,7 @@ public strictfp class RobotPlayer {
                 rc.buildRobot(RobotType.CARRIER, newLoc);
             }
         //from there, has a 1/6 chance of building an amplifier
-        } else if (rng.nextInt(6)==0){
+        } else if (rng.nextInt(20)==0){
             if (rc.canBuildRobot(RobotType.AMPLIFIER, newLoc) && rc.getResourceAmount(ResourceType.ADAMANTIUM) > 40 && rc.getResourceAmount(ResourceType.MANA) > 40) {
                 rc.buildRobot(RobotType.AMPLIFIER, newLoc);
             }
