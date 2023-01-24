@@ -14,6 +14,8 @@ public class CarrierStrategy {
     static boolean anchorMode = false;
     static int numHeadquarters = 0;
 
+    static int optimalAmount;
+
     /**
      * Run a single turn for a Carrier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
@@ -25,14 +27,15 @@ public class CarrierStrategy {
         if(hqLoc == null) scanHQ(rc);
         if(wellLoc == null) scanWells(rc);
         scanIslands(rc);
+        System.out.println(wellLoc);
 
         //Collect from well if close and inventory not full
         if(wellLoc != null) {
             int distance = (int) Math.sqrt(rc.getLocation().distanceSquaredTo(wellLoc));
-            System.out.println(String.format("The Distance is: %d", distance));
-            int optimalAmount = getOptimalResourceCount(distance, well.isUpgraded());
-            System.out.println(String.format("The resource count is: %d", optimalAmount));
-            if(rc.canCollectResource(wellLoc, optimalAmount)) rc.collectResource(wellLoc, optimalAmount);
+            optimalAmount = getOptimalResourceCount(distance, well.isUpgraded());
+            if(rc.canCollectResource(wellLoc, -1) && getTotalResources(rc) < optimalAmount) {
+                rc.collectResource(wellLoc, -1); /**MAYBE ITS TRYING TO COLLECT OPTIMAL AMOUNT EACH TIME AND GETTING CONFUSED?*/
+            }
         }
 
         //Transfer resource to headquarters
@@ -41,7 +44,8 @@ public class CarrierStrategy {
 
         if(rc.canTakeAnchor(hqLoc, Anchor.STANDARD)) {
             rc.takeAnchor(hqLoc, Anchor.STANDARD);
-            anchorMode = true;  /**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
+            anchorMode = true;
+            Communication.addCarierWithAnchor(rc);/**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
         }
 
         //no resources -> look for well
@@ -55,7 +59,7 @@ public class CarrierStrategy {
                     }
                 }
             }
-            else RobotPlayer.moveTowards(rc, islandLoc);
+            else Pathing.moveTowards(rc, islandLoc);
 
             if(rc.canPlaceAnchor() && rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())) == Team.NEUTRAL) {
                 rc.placeAnchor();
@@ -67,11 +71,11 @@ public class CarrierStrategy {
             if(total == 0) {
                 //move towards well or search for well
                 if(wellLoc == null) RobotPlayer.moveRandom(rc); //COULD BE COOL TO KEEP A LOG OF THE PREVIOUS STEPS TO MAKE REPEATING STEPS STOP HAPPENING
-                else if(!rc.getLocation().isAdjacentTo(wellLoc)) RobotPlayer.moveTowards(rc, wellLoc);
+                else if(!rc.getLocation().isAdjacentTo(wellLoc)) Pathing.moveTowards(rc, wellLoc);
             }
-            if(total == GameConstants.CARRIER_CAPACITY) {
+            if (total==optimalAmount){ /**just changed this from else if to else*/
                 //move towards HQ
-                RobotPlayer.moveTowards(rc, hqLoc);
+                Pathing.moveTowards(rc, hqLoc);
             }
         }
 
@@ -111,7 +115,7 @@ public class CarrierStrategy {
                 if(rc.getLocation().distanceSquaredTo(wellLoc) > rc.getLocation().distanceSquaredTo(wells[i].getMapLocation())) { //*Note! getMapLocation is for wells, getLocation is for robots*//
                     wellLoc = wells[i].getMapLocation();
                     well = wells[i];
-                    /**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST WELL**/
+                    /**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST WELL**/ /**FIX THIS SHIT*/
                     /**Also, updates well so we actually get a well info object*/
                 }
             }
