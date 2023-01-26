@@ -25,7 +25,7 @@ public class Pathing {
                     break;
                 }
             }
-            System.out.println(directionIndex);
+            System.out.println("THIS IS DIRECTION INDEX: "+directionIndex);
             //int directionIndex = RobotPlayer.directions.indexOf(previousDir);//i dont think you can use the indexOf method since its not an arrayList
             Direction forbidden = RobotPlayer.directions[(directionIndex+4)%8];
             //Direction forbidden = previousDir;

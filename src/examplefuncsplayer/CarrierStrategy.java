@@ -2,6 +2,8 @@ package examplefuncsplayer;
 
 import battlecode.common.*;
 
+import java.util.Random;
+
 import static examplefuncsplayer.OptimalResource.getOptimalResourceCount;
 
 public class CarrierStrategy {
@@ -25,9 +27,8 @@ public class CarrierStrategy {
             Communication.updateHeadquarterInfo(rc);
         }
         if(hqLoc == null) scanHQ(rc);
-        if(wellLoc == null) scanWells(rc);
+        scanWells(rc); /**making this not conditional lets them go to other wells, but now they wont add reality anchors*/
         scanIslands(rc);
-        System.out.println(wellLoc);
 
         //Collect from well if close and inventory not full
         if(wellLoc != null) {
@@ -43,6 +44,7 @@ public class CarrierStrategy {
         depositResource(rc, ResourceType.MANA);
 
         if(rc.canTakeAnchor(hqLoc, Anchor.STANDARD)) {
+            System.out.println("AM I EVEN GETTING HERE JESUS FUCK");
             rc.takeAnchor(hqLoc, Anchor.STANDARD);
             anchorMode = true;
             Communication.addCarierWithAnchor(rc);/**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
@@ -108,17 +110,17 @@ public class CarrierStrategy {
     static void scanWells(RobotController rc) throws GameActionException {
         WellInfo[] wells = rc.senseNearbyWells();
         if(wells.length > 0) {
-            wellLoc = wells[0].getMapLocation();
-            well = wells[0];
-            for(int i = 1; i < wells.length; i++) {
-                if(rc.getLocation().distanceSquaredTo(wellLoc) > rc.getLocation().distanceSquaredTo(wells[i].getMapLocation())) { //*Note! getMapLocation is for wells, getLocation is for robots*//
+            int wellChoice = RobotPlayer.rng.nextInt(wells.length);
+            wellLoc = wells[wellChoice].getMapLocation();
+            well = wells[wellChoice];
+            System.out.println("Well: " + well);
+            /**for(int i = 1; i < wells.length; i++) {
+                if(rc.getLocation().distanceSquaredTo(wellLoc) > rc.getLocation().distanceSquaredTo(wells[i].getMapLocation())) {
                     wellLoc = wells[i].getMapLocation();
                     well = wells[i];
-                    /**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST WELL**/ /**FIX THIS SHIT*/
-                    /**Also, updates well so we actually get a well info object*/
                 }
-            }
-        }
+            }*/ //*Note! getMapLocation is for wells, getLocation is for robots*/
+        }/**Also, updates well so we actually get a well info object*/
     }
 
     static void depositResource(RobotController rc, ResourceType type) throws GameActionException {
