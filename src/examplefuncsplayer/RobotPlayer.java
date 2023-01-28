@@ -16,6 +16,7 @@ import java.util.Set;
  */
 public strictfp class RobotPlayer {
 
+    static boolean noMoreCarriers = true;
     // Sean is a cutie.
     /**
      * We will use this variable to count the number of turns this robot has been alive.
@@ -114,6 +115,7 @@ public strictfp class RobotPlayer {
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
     static void runHeadquarters(RobotController rc) throws GameActionException {
+        System.out.println("WHAT THE ACTUAL FUCK: " + rc.getResourceAmount(ResourceType.MANA) + " AND: " + rc.getActionCooldownTurns());
         // Pick a direction to build in.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation newLoc = rc.getLocation().add(dir);
@@ -154,7 +156,7 @@ public strictfp class RobotPlayer {
                 num_anchors++;
             }
         }
-        if (rng.nextInt(3)==0) { /**1/3 chance of building a carrier, else it will build 5 launchers*/
+        if (rng.nextBoolean()) { /**NEED TO CHANGE THIS LAUNCHER/CARRIER BALANCE*/
             // Let's try to build a carrier.
             rc.setIndicatorString("Trying to build a carrier");
             if (rc.canBuildRobot(RobotType.CARRIER, newLoc)) {
@@ -183,6 +185,7 @@ public strictfp class RobotPlayer {
                     dir = directions[rng.nextInt(directions.length)];
                     newLoc = rc.getLocation().add(dir);
                 }
+                System.out.println("Number placed: " + numPlaced + "AND attempts: " + attempts);
             }
             rc.setIndicatorString("Trying to build a launcher");
         }
