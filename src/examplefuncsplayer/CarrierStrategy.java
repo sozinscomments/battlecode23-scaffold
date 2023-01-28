@@ -44,10 +44,14 @@ public class CarrierStrategy {
         depositResource(rc, ResourceType.MANA);
 
         if(rc.canTakeAnchor(hqLoc, Anchor.STANDARD)) {
-            System.out.println("AM I EVEN GETTING HERE JESUS FUCK");
+            System.out.println("Broadcasting Carrier ID: " + rc.getID());
+            System.out.println("Starting Island Index: "+ Communication.STARTING_ISLAND_IDX);
+            System.out.println("Carrier with anchor index: " + Communication.CARRIER_WITH_ANCHOR_IDX);
+            System.out.println("INDEX 4: " + rc.readSharedArray(Communication.STARTING_ISLAND_IDX));
+            System.out.println("INDEX 14: " + rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX));
             rc.takeAnchor(hqLoc, Anchor.STANDARD);
             anchorMode = true;
-            Communication.addCarierWithAnchor(rc);/**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
+            Communication.addCarrierWithAnchor(rc);/**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
         }
 
         //no resources -> look for well

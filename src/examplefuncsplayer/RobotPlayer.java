@@ -156,7 +156,7 @@ public strictfp class RobotPlayer {
                 num_anchors++;
             }
         }
-        if (rng.nextBoolean()) { /**NEED TO CHANGE THIS LAUNCHER/CARRIER BALANCE*/
+        if (rng.nextBoolean() && rc.getRobotCount()<20) { /**THIS SECOND CONDITION MAKES YOU MORE LIKELY TO BUILD ANCHORS THAN JUST A BUNCH OF CARRIERS*/
             // Let's try to build a carrier.
             rc.setIndicatorString("Trying to build a carrier");
             if (rc.canBuildRobot(RobotType.CARRIER, newLoc)) {

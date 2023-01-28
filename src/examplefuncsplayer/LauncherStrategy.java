@@ -12,10 +12,16 @@ public class LauncherStrategy {
 //    static Direction previousDir = null; /**SEAN'S EDIT, INSTEAD OF MOVING TOWARD WELL, LAUNCHERS WILL MOVE PSEUDO-RANDOM BUT WILL NOT RETRACE THEIR MOST RECENT STEP*/
     static void runLauncher(RobotController rc) throws GameActionException {
         int carrierWithAnchor = rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX);
+        System.out.println("WHAT IS THE CARRIER WITH ANCHOR IDX NUMBER: " +  carrierWithAnchor);
         // Try to attack someone
         int radius = rc.getType().actionRadiusSquared;
         Team opponent = rc.getTeam().opponent();
         RobotInfo[] enemies = rc.senseNearbyRobots(radius, opponent); /**Make use of the getClosestEnemy method from Communication*/
+        System.out.println("ENEMIES: " + enemies);
+        if (enemies==null) {
+            System.out.println("IT IS ACTUALLY TRYING THIS!");
+            Communication.getClosestEnemy(rc); /**Theoretically, this should mean that if you can't scan for any enemies it will look in the communication array*/
+        }
         int lowestHealth = 1000;
         int smallestDistance = 100;
         RobotInfo target = null;
@@ -49,6 +55,7 @@ public class LauncherStrategy {
         Communication.tryWriteMessages(rc);
 
         if (target != null){
+            rc.setIndicatorString("MY CURRENT TARGET IS: " + target);
             if (rc.canAttack(target.getLocation()))
                 rc.attack(target.getLocation());
             Pathing.moveTowards(rc, target.location);
@@ -57,6 +64,8 @@ public class LauncherStrategy {
             for (RobotInfo ally : allies){
                 if(carrierWithAnchor == ally.getID()){
                     Pathing.moveTowards(rc,ally.getLocation());
+                    rc.setIndicatorString("Defending!!! : " + ally.getID());
+                    break;
                 }
             }
         }
@@ -76,8 +85,10 @@ public class LauncherStrategy {
                 rc.setIndicatorString("Following " + lowestID);
             }
             else{
-                Pathing.moveRandomNoBacktrack(rc);
-                rc.setIndicatorString("I'm the leader!");
+                MapLocation leadingLocation = new MapLocation(rc.getMapWidth(),rc.getMapHeight());
+                leadingLocation =  leadingLocation.translate(-CarrierStrategy.hqLoc.x,-CarrierStrategy.hqLoc.y);
+                Pathing.moveTowards(rc,leadingLocation);
+                rc.setIndicatorString("I'm the leader! AND IM HEADING FOR: " + leadingLocation);
             }
 //            if(previousDir ==null) { /**SEANS EDIT: If you havent moved yet, this will choose randomly*/
 //                Direction dir = RobotPlayer.directions[RobotPlayer.rng.nextInt(RobotPlayer.directions.length)];
@@ -123,6 +134,7 @@ public class LauncherStrategy {
                 Direction moveDir = robotLocation.directionTo(enemyLocation);
                 if (rc.canMove(moveDir)) {
                     rc.move(moveDir);
+                    rc.setIndicatorString("Moving toward an enemy");
                 }
             }
         }
@@ -131,6 +143,7 @@ public class LauncherStrategy {
         Direction dir = RobotPlayer.directions[RobotPlayer.rng.nextInt(RobotPlayer.directions.length)];
         if (rc.canMove(dir)) {
             rc.move(dir);
+            rc.setIndicatorString("Moving Randomly for no fucking reason");
         }
     }
 }
