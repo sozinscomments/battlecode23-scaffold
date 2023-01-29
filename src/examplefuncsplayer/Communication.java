@@ -219,7 +219,7 @@ class Communication {
         return 1 + m.x + m.y * rc.getMapWidth();
     }
 
-    private static MapLocation intToLocation(RobotController rc, int m) {
+    public static MapLocation intToLocation(RobotController rc, int m) {
         if (m == 0) {
             return null;
         }

@@ -85,11 +85,20 @@ public class LauncherStrategy {
                 rc.setIndicatorString("Following " + lowestID);
             }
             else{
-                if (CarrierStrategy.hqLoc!=null) { /**INSTEAD NEED TO LEARN HOW TO GET HQ LOCATION FROM READING SHARED ARRAY*/
-                    MapLocation fullMap = new MapLocation(rc.getMapWidth(),rc.getMapHeight());
-                    MapLocation leadingLocation = fullMap.translate(-1*CarrierStrategy.hqLoc.x,-1*CarrierStrategy.hqLoc.y);
-                    Pathing.moveTowards(rc,leadingLocation);
-                    rc.setIndicatorString("I'm the leader! AND IM HEADING FOR: " + leadingLocation);
+                for (int i = 0; i < GameConstants.MAX_STARTING_HEADQUARTERS; i++) { /**INSTEAD NEED TO LEARN HOW TO GET HQ LOCATION FROM READING SHARED ARRAY*/
+                    if (rc.readSharedArray(i)!=0) { /**Not totally sure how the locations are stored in the communication array, it also might break when the HQ is at 0,0 but we probably dont need to worry*/
+                        MapLocation HQlocation = Communication.intToLocation(rc, rc.readSharedArray(i));
+                        MapLocation fullMap = new MapLocation(rc.getMapWidth(),rc.getMapHeight());
+                        MapLocation leadingLocation = fullMap.translate((-1*HQlocation.x-1),(-1*HQlocation.y-1));
+                        Pathing.moveTowards(rc,leadingLocation);
+                        rc.setIndicatorString("I'm the leader! AND IM HEADING FOR: " + leadingLocation);
+                        return;
+                    }
+                    if (i==GameConstants.MAX_STARTING_HEADQUARTERS-1) {
+                        MapLocation center = new MapLocation(rc.getMapWidth()/2, rc.getMapHeight()/2);
+                        Pathing.moveTowards(rc, center);
+                        return;
+                    }
                 }
             }
 //            if(previousDir ==null) { /**SEANS EDIT: If you havent moved yet, this will choose randomly*/
