@@ -51,6 +51,7 @@ public class CarrierStrategy {
             System.out.println("INDEX 14: " + rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX));
             rc.takeAnchor(hqLoc, Anchor.STANDARD);
             anchorMode = true;
+            rc.setIndicatorString("I MUST BE PROTECTED AT ALL COSTS");
             Communication.addCarrierWithAnchor(rc);/**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
         }
 
@@ -70,6 +71,9 @@ public class CarrierStrategy {
             if(rc.canPlaceAnchor() && rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())) == Team.NEUTRAL) {
                 rc.placeAnchor();
                 anchorMode = false;
+                if(rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX) == rc.getID()){
+                    rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
+                }
             }
         }
         else {

@@ -85,10 +85,12 @@ public class LauncherStrategy {
                 rc.setIndicatorString("Following " + lowestID);
             }
             else{
-                MapLocation leadingLocation = new MapLocation(rc.getMapWidth(),rc.getMapHeight());
-                leadingLocation =  leadingLocation.translate(-CarrierStrategy.hqLoc.x,-CarrierStrategy.hqLoc.y);
-                Pathing.moveTowards(rc,leadingLocation);
-                rc.setIndicatorString("I'm the leader! AND IM HEADING FOR: " + leadingLocation);
+                if (CarrierStrategy.hqLoc!=null) { /**INSTEAD NEED TO LEARN HOW TO GET HQ LOCATION FROM READING SHARED ARRAY*/
+                    MapLocation fullMap = new MapLocation(rc.getMapWidth(),rc.getMapHeight());
+                    MapLocation leadingLocation = fullMap.translate(-1*CarrierStrategy.hqLoc.x,-1*CarrierStrategy.hqLoc.y);
+                    Pathing.moveTowards(rc,leadingLocation);
+                    rc.setIndicatorString("I'm the leader! AND IM HEADING FOR: " + leadingLocation);
+                }
             }
 //            if(previousDir ==null) { /**SEANS EDIT: If you havent moved yet, this will choose randomly*/
 //                Direction dir = RobotPlayer.directions[RobotPlayer.rng.nextInt(RobotPlayer.directions.length)];

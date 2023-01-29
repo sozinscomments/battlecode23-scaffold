@@ -168,7 +168,7 @@ public strictfp class RobotPlayer {
                 return;
             int attempts = 0;
             int numPlaced = 0;
-            while (numPlaced != 5 && attempts != 30){
+            while (numPlaced != 10 && attempts != 30){
                 attempts++;
                 if (rc.canBuildRobot(RobotType.LAUNCHER, newLoc)) {
                     rc.buildRobot(RobotType.LAUNCHER, newLoc);
