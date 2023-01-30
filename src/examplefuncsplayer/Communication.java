@@ -24,9 +24,10 @@ class Communication {
 
     // Maybe you want to change this based on exact amounts which you can get on turn 1
     static final int STARTING_ISLAND_IDX = GameConstants.MAX_STARTING_HEADQUARTERS;
-    private static final int STARTING_ENEMY_IDX = GameConstants.MAX_NUMBER_ISLANDS + GameConstants.MAX_STARTING_HEADQUARTERS + 1; /**tryna add 1 to give a space for carriers with anchors*/
+    /**The original code here was talking about max number islands but thats not even a game constant value, they on some dumb shit fr. lets just have it save up to 10 islands*/
+    private static final int STARTING_ENEMY_IDX = 10/**GameConstants.MAX_NUMBER_ISLANDS*/ + GameConstants.MAX_STARTING_HEADQUARTERS + 1; /**tryna add 1 to give a space for carriers with anchors*/
 
-    public static final int CARRIER_WITH_ANCHOR_IDX = GameConstants.MAX_NUMBER_ISLANDS + GameConstants.MAX_STARTING_HEADQUARTERS; /**lets try this*/
+    public static final int CARRIER_WITH_ANCHOR_IDX = 10/**GameConstants.MAX_NUMBER_ISLANDS*/ + GameConstants.MAX_STARTING_HEADQUARTERS; /**lets try this*/
 
     private static final int TOTAL_BITS = 16;
     private static final int MAPLOC_BITS = 12;
@@ -98,7 +99,7 @@ class Communication {
         }
     }
 
-    static void addCarierWithAnchor(RobotController rc) throws GameActionException{
+    static void addCarrierWithAnchor(RobotController rc) throws GameActionException{
         Message msg = new Message(CARRIER_WITH_ANCHOR_IDX, rc.getID(), RobotPlayer.turnCount);
         messagesQueue.add(msg);
     } /**Should probably make a method to delete it after it no longer needs protection, we'll see how it goes*/
@@ -218,7 +219,7 @@ class Communication {
         return 1 + m.x + m.y * rc.getMapWidth();
     }
 
-    private static MapLocation intToLocation(RobotController rc, int m) {
+    public static MapLocation intToLocation(RobotController rc, int m) {
         if (m == 0) {
             return null;
         }
