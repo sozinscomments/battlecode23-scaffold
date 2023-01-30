@@ -58,7 +58,7 @@ public class CarrierStrategy {
         //no resources -> look for well
         if(anchorMode) {
             if(islandLoc == null) {
-                for (int i = Communication.STARTING_ISLAND_IDX; i < Communication.STARTING_ISLAND_IDX + GameConstants.MAX_NUMBER_ISLANDS; i++) {
+                for (int i = Communication.STARTING_ISLAND_IDX; i < Communication.STARTING_ISLAND_IDX + 10; i++) {
                     MapLocation islandNearestLoc = Communication.readIslandLocation(rc, i);
                     if (islandNearestLoc != null) {
                         islandLoc = islandNearestLoc;
@@ -66,7 +66,10 @@ public class CarrierStrategy {
                     }
                 }
             }
-            else Pathing.moveTowards(rc, islandLoc);
+            else {
+                Pathing.moveTowards(rc, islandLoc);
+                rc.setIndicatorString("I'M MOVING TOWARD " + islandLoc);
+            }
 
             if(rc.canPlaceAnchor() && rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())) == Team.NEUTRAL) {
                 rc.placeAnchor();
@@ -75,6 +78,9 @@ public class CarrierStrategy {
                     rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
                 }
             }
+            //else if (rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())) != Team.NEUTRAL){
+            //    islandLoc=null;
+            //}
         }
         else {
             int total = getTotalResources(rc);

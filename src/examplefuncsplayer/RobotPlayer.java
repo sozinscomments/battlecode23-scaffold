@@ -149,11 +149,33 @@ public strictfp class RobotPlayer {
             }
         }
         if (rc.canBuildAnchor(Anchor.STANDARD)) {
-            int num_anchors = 1;
-            while (rc.getResourceAmount(ResourceType.ADAMANTIUM) > ad_standard && rc.getResourceAmount(ResourceType.MANA) > man_standard && num_anchors <= 5) { //build up to 5 standard anchors
-                rc.setIndicatorString("Building Standard Anchor! " + rc.getNumAnchors(Anchor.STANDARD));
-                rc.buildAnchor(Anchor.STANDARD);
-                num_anchors++;
+            boolean shouldBuildAnchor = true;
+            int carrierWithAnchor = rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX);
+            if (carrierWithAnchor != 0){
+                shouldBuildAnchor = false;
+            }
+//            for (int i = 1; i < 11; i++) { /**Just goes from 1 to 10 cuz thats the number of islands we have it set to store, the readTeamHoldingIsland adds the number indecies to get to the island readings*/
+//                if(Communication.readIslandLocation(rc,i)==null){
+//                    continue;
+//                }
+//                Team team = Communication.readTeamHoldingIsland(rc,i); /**I'm hoping that if it doesn't have the island known it'll just assume there's nothing there*/
+//                System.out.println("THE TEAM IS : " + team + "for island " + i + "at Location: " + Communication.readIslandLocation(rc,i));
+//                if (team==Team.NEUTRAL){ /**This should go ahead with building the anchor when there is a neutral island*/
+//                    break;
+//                }
+//                if (i==10){
+//                    shouldBuildAnchor=false;
+//                    System.out.println("PLEASE STOP MAKING ANCHORS I SWEAR TO FUCKING GOD");
+//                    rc.setIndicatorString("I NEED TO STOP MAKING ANCHORS");
+//                }
+//            }
+            if(shouldBuildAnchor) {
+                int num_anchors = 1;
+                while (rc.getResourceAmount(ResourceType.ADAMANTIUM) > ad_standard && rc.getResourceAmount(ResourceType.MANA) > man_standard && num_anchors <= 1) { //build up to 5 standard anchors
+                    rc.setIndicatorString("Building Standard Anchor! " + rc.getNumAnchors(Anchor.STANDARD));
+                    rc.buildAnchor(Anchor.STANDARD);
+                    num_anchors++;
+                }
             }
         }
         if (rng.nextBoolean() && rc.getRobotCount()<20) { /**THIS SECOND CONDITION MAKES YOU MORE LIKELY TO BUILD ANCHORS THAN JUST A BUNCH OF CARRIERS*/
