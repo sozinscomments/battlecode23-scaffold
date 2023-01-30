@@ -39,7 +39,13 @@ public class CarrierStrategy {
             }
         }
 
-        //Transfer resource to headquarters
+        //puts some of the resource back into well (to upgrade), and transfers the rest to headquarter
+        ResourceType wellType = wellLoc.getResourceType(); //FIX THIS!!!!
+        if (rc.canTransferResource(wellLoc, wellType, (int)(1/3*rc.getResourceAmount(wellType))) == True) {
+            rc.transferResource(wellLoc, wellType, (int)(1/3*rc.getResourceAmount(wellType)));
+            rc.setIndicatorString("I transferred some " + wellType.toString());
+        }
+        //transfers the rest to HQ
         depositResource(rc, ResourceType.ADAMANTIUM);
         depositResource(rc, ResourceType.MANA);
 
@@ -180,4 +186,21 @@ public class CarrierStrategy {
             Communication.updateIslandInfo(rc, id);
         }**/
     }
+
+    static void upgradeWell(RobotController rc) throws GameActionException{
+        /**
+         * runs earlier in the game than changing well to elixir
+         */
+        if (canTransferResource(wellLoc, ResourceType rType, int amount) == True) {
+
+        }
+    }
+
+    static void makeElixir(RobotController rc) throws GameActionException{
+        /** will only run if boolean largeMap == true
+         * pretty much will make one of the wells elixir (lmao gotta leave rn so i cant actually do it yet)
+         */
+    }
+
+
 }
