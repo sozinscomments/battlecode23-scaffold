@@ -12,14 +12,14 @@ public class LauncherStrategy {
 //    static Direction previousDir = null; /**SEAN'S EDIT, INSTEAD OF MOVING TOWARD WELL, LAUNCHERS WILL MOVE PSEUDO-RANDOM BUT WILL NOT RETRACE THEIR MOST RECENT STEP*/
     static void runLauncher(RobotController rc) throws GameActionException {
         int carrierWithAnchor = rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX);
-        System.out.println("WHAT IS THE CARRIER WITH ANCHOR IDX NUMBER: " +  carrierWithAnchor);
+//        System.out.println("WHAT IS THE CARRIER WITH ANCHOR IDX NUMBER: " +  carrierWithAnchor);
         // Try to attack someone
         int radius = rc.getType().actionRadiusSquared;
         Team opponent = rc.getTeam().opponent();
         RobotInfo[] enemies = rc.senseNearbyRobots(radius, opponent); /**Make use of the getClosestEnemy method from Communication*/
-        System.out.println("ENEMIES: " + enemies);
+//        System.out.println("ENEMIES: " + enemies);
         if (enemies==null) {
-            System.out.println("IT IS ACTUALLY TRYING THIS!");
+//            System.out.println("IT IS ACTUALLY TRYING THIS!");
             Communication.getClosestEnemy(rc); /**Theoretically, this should mean that if you can't scan for any enemies it will look in the communication array*/
         }
         int lowestHealth = 1000;

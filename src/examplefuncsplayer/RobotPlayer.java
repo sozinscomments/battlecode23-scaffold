@@ -115,7 +115,6 @@ public strictfp class RobotPlayer {
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
     static void runHeadquarters(RobotController rc) throws GameActionException {
-        System.out.println("WHAT THE ACTUAL FUCK: " + rc.getResourceAmount(ResourceType.MANA) + " AND: " + rc.getActionCooldownTurns());
         // Pick a direction to build in.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation newLoc = rc.getLocation().add(dir);
@@ -149,10 +148,13 @@ public strictfp class RobotPlayer {
             }
         }
         if (rc.canBuildAnchor(Anchor.STANDARD)) {
+            System.out.println("THE CURRENT VALUE IN CARRIER WITH ANCHOR IS: " + rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX));
             boolean shouldBuildAnchor = true;
             int carrierWithAnchor = rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX);
             if (carrierWithAnchor != 0){
                 shouldBuildAnchor = false;
+                rc.setIndicatorString("WE'RE NOT BUILDING AN ANCHOR");
+                System.out.println("HQ IS NOT BUILDING AN ANCHOR");
             }
 //            for (int i = 1; i < 11; i++) { /**Just goes from 1 to 10 cuz thats the number of islands we have it set to store, the readTeamHoldingIsland adds the number indecies to get to the island readings*/
 //                if(Communication.readIslandLocation(rc,i)==null){
@@ -200,7 +202,6 @@ public strictfp class RobotPlayer {
                     dir = directions[rng.nextInt(directions.length)];
                     newLoc = rc.getLocation().add(dir);
                 }
-                System.out.println("Number placed: " + numPlaced + "AND attempts: " + attempts);
             }
             rc.setIndicatorString("Trying to build a launcher");
         }

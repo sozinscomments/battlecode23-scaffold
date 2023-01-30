@@ -57,10 +57,14 @@ public class CarrierStrategy {
 
         //no resources -> look for well
         if(anchorMode) {
+            if (rc.getHealth() < 30 && rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX) == rc.getID()){
+                rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
+            }
+            System.out.println("MY CURRENT LOCATION IS " + rc.getLocation() + " AND MY TARGET ISLAND IS AT " + islandLoc);
             if(islandLoc == null) {
                 for (int i = Communication.STARTING_ISLAND_IDX; i < Communication.STARTING_ISLAND_IDX + 10; i++) {
                     MapLocation islandNearestLoc = Communication.readIslandLocation(rc, i);
-                    if (islandNearestLoc != null) {
+                    if (islandNearestLoc != null && Communication.readTeamHoldingIsland(rc,i)==Team.NEUTRAL) {
                         islandLoc = islandNearestLoc;
                         break;
                     }
@@ -72,15 +76,31 @@ public class CarrierStrategy {
             }
 
             if(rc.canPlaceAnchor() && rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())) == Team.NEUTRAL) {
+                System.out.println("AM I GETTING TO A PLACE WHERE IT THINKGS ITS PLACING ANCHORS?");
                 rc.placeAnchor();
                 anchorMode = false;
+                System.out.println("I'm placing the anchor and the anchormode is now false");
                 if(rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX) == rc.getID()){
                     rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
                 }
             }
-            //else if (rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())) != Team.NEUTRAL){
-            //    islandLoc=null;
-            //}
+            else if (rc.getLocation().x == islandLoc.x && rc.getLocation().y == islandLoc.y){ /**IDEALLY: IF YOU GOT THERE AND STILL CANT PLACE IT, TRY TO FIND ANOTHER ISLAND*/
+                System.out.println("AM I GETTING TO SET ISLAND LOC TO NULL FR");
+                for (int i = Communication.STARTING_ISLAND_IDX; i < Communication.STARTING_ISLAND_IDX + 10; i++) {
+                    MapLocation islandNearestLoc = Communication.readIslandLocation(rc, i);
+                    if (islandNearestLoc != null && Communication.readTeamHoldingIsland(rc,i)==Team.NEUTRAL) {
+                        islandLoc = islandNearestLoc;
+                        break;
+                    }
+                } /**Make the search through the shared array for islands a method*/
+                //return; /**POTENTIALLY FIXES SOMETHING? THE PROBLEM IS THE CARRIER WITH ANCHOR VALUE ISN'T SET TO 0*/
+            }
+//            else{
+//                islandLoc=null;
+//                System.out.println("I couldn't place the anchor and the island location is set to null to try to find another one");
+//                rc.setIndicatorString("I DONT KNOW WHERE THE ISLAND IS RN");
+//                return;
+//            }
         }
         else {
             int total = getTotalResources(rc);
@@ -127,7 +147,6 @@ public class CarrierStrategy {
             int wellChoice = RobotPlayer.rng.nextInt(wells.length);
             wellLoc = wells[wellChoice].getMapLocation();
             well = wells[wellChoice];
-            System.out.println("Well: " + well);
             /**for(int i = 1; i < wells.length; i++) {
                 if(rc.getLocation().distanceSquaredTo(wellLoc) > rc.getLocation().distanceSquaredTo(wells[i].getMapLocation())) {
                     wellLoc = wells[i].getMapLocation();
@@ -151,24 +170,25 @@ public class CarrierStrategy {
     }
 
     static void scanIslands(RobotController rc) throws GameActionException {
+//        int[] ids = rc.senseNearbyIslands();
+//        int j=0;
+//        for(int i = 0; i<ids.length; i++) {
+//            Communication.updateIslandInfo(rc, ids[i]);
+//            if (rc.senseTeamOccupyingIsland(ids[i]) == Team.NEUTRAL) {
+//                islandLoc = rc.senseNearbyIslandLocations(ids[i])[0];
+//                j = i;
+//                break; /**Should hopefully find a island. If there's more than one, the next part will start from the index it left off at and see if it can find a closer one**/
+//            }
+//        }
+//        for(int k = j; k<ids.length; k++) {
+//            Communication.updateIslandInfo(rc, ids[k]);
+//            if (rc.senseTeamOccupyingIsland(ids[k]) == Team.NEUTRAL && rc.getLocation().distanceSquaredTo(islandLoc) > rc.getLocation().distanceSquaredTo(rc.senseNearbyIslandLocations(ids[k])[0])) {
+//                islandLoc = rc.senseNearbyIslandLocations(ids[k])[0];
+//            } /**This keeps going to see if any of the other islands are closer**/
+//        }/**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST ISLAND**/
         int[] ids = rc.senseNearbyIslands();
-        int j=0;
-        for(int i = 0; i<ids.length; i++) {
-            Communication.updateIslandInfo(rc, ids[i]);
-            if (rc.senseTeamOccupyingIsland(ids[i]) == Team.NEUTRAL) {
-                islandLoc = rc.senseNearbyIslandLocations(ids[i])[0];
-                j = i;
-                break; /**Should hopefully find a island. If there's more than one, the next part will start from the index it left off at and see if it can find a closer one**/
-            }
-        }
-        for(int k = j; k<ids.length; k++) {
-            Communication.updateIslandInfo(rc, ids[k]);
-            if (rc.senseTeamOccupyingIsland(ids[k]) == Team.NEUTRAL && rc.getLocation().distanceSquaredTo(islandLoc) > rc.getLocation().distanceSquaredTo(rc.senseNearbyIslandLocations(ids[k])[0])) {
-                islandLoc = rc.senseNearbyIslandLocations(ids[k])[0];
-            } /**This keeps going to see if any of the other islands are closer**/
-        }/**IMPROVEMENT SEAN MADE: WILL CHOSE THE NEAREST ISLAND**/
-        /**int[] ids = rc.senseNearbyIslands();
         for(int id : ids) {
+            System.out.println("THE AVAILABLE ISLANDS ARE " + id);
             if(rc.senseTeamOccupyingIsland(id) == Team.NEUTRAL) {
                 MapLocation[] locs = rc.senseNearbyIslandLocations(id);
                 if(locs.length > 0) {
@@ -177,6 +197,6 @@ public class CarrierStrategy {
                 }
             }
             Communication.updateIslandInfo(rc, id);
-        }**/
+        }
     }
 }
