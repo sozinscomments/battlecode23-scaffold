@@ -180,7 +180,7 @@ public strictfp class RobotPlayer {
                 }
             }
         }
-        if (rng.nextBoolean() && rc.getRobotCount()<20) { /**THIS SECOND CONDITION MAKES YOU MORE LIKELY TO BUILD ANCHORS THAN JUST A BUNCH OF CARRIERS*/
+        if (rng.nextBoolean() && rc.getRobotCount()<10) { /**THIS SECOND CONDITION MAKES YOU MORE LIKELY TO BUILD ANCHORS THAN JUST A BUNCH OF CARRIERS*/
             // Let's try to build a carrier.
             rc.setIndicatorString("Trying to build a carrier");
             if (rc.canBuildRobot(RobotType.CARRIER, newLoc)) {
