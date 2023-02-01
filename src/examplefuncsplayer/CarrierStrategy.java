@@ -54,13 +54,13 @@ public class CarrierStrategy {
             rc.takeAnchor(hqLoc, Anchor.STANDARD);
             anchorMode = true;
             rc.setIndicatorString("I MUST BE PROTECTED AT ALL COSTS");
-            Communication.addCarrierWithAnchor(rc);/**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
+            Communication.addCarrierWithAnchor(rc,rc.getID());/**Needs to put this in communication array so that it becomes the leader for a bunch of launchers, that way it can head toward the well and be protected*/
         }
 
         //no resources -> look for well
         if(anchorMode) {
             if (rc.getHealth() < 100 && rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX) == rc.getID()){
-                rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
+                Communication.addCarrierWithAnchor(rc,0);//rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
                 rc.setIndicatorString("I'm dying so I let them know that");
             }
             System.out.println("MY CURRENT LOCATION IS " + rc.getLocation() + " AND MY TARGET ISLAND IS AT " + islandLoc);
@@ -76,7 +76,8 @@ public class CarrierStrategy {
             else if (rc.getLocation().x == islandLoc.x && rc.getLocation().y == islandLoc.y) { /**IDEALLY: IF YOU GOT THERE AND STILL CANT PLACE IT, TRY TO FIND ANOTHER ISLAND*/
                 /**Should also figure out how to write messages so you can put the team in the communication array*/
                 //                System.out.println("AM I GETTING TO SET ISLAND LOC TO NULL FR");
-                if (rc.senseTeamOccupyingIsland(islandLocIndex)!=Team.NEUTRAL){
+                System.out.println("The island : " + islandLocIndex + "   is located at : " + islandLoc);
+                if (rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation()))!=Team.NEUTRAL){//if (rc.senseTeamOccupyingIsland(islandLocIndex)!=Team.NEUTRAL){
                     oldIslandLoc = new MapLocation(islandLoc.x, islandLoc.y);
                     for (int i = Communication.STARTING_ISLAND_IDX; i < Communication.STARTING_ISLAND_IDX + 10; i++) {
                         MapLocation islandNearestLoc = Communication.readIslandLocation(rc, i);
@@ -113,13 +114,13 @@ public class CarrierStrategy {
 
             if(rc.canPlaceAnchor() && rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())) == Team.NEUTRAL) {
                 System.out.println("AM I GETTING TO A PLACE WHERE IT THINKGS ITS PLACING ANCHORS?");
+                if(rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX) == rc.getID()){
+                    Communication.addCarrierWithAnchor(rc,0);//rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
+                    rc.setIndicatorString("Just placed an anchor and told HQ, also " + rc.senseTeamOccupyingIsland(rc.senseIsland(rc.getLocation())));
+                }
                 rc.placeAnchor();
                 anchorMode = false;
                 System.out.println("I'm placing the anchor and the anchormode is now false");
-                if(rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX) == rc.getID()){
-                    rc.writeSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX,0);
-                    rc.setIndicatorString("Just placed an anchor and told HQ they can build more");
-                }
             }
 //            else if (rc.getLocation().x == islandLoc.x && rc.getLocation().y == islandLoc.y){ /**IDEALLY: IF YOU GOT THERE AND STILL CANT PLACE IT, TRY TO FIND ANOTHER ISLAND*/
 //                System.out.println("AM I GETTING TO SET ISLAND LOC TO NULL FR");

@@ -99,8 +99,8 @@ class Communication {
         }
     }
 
-    static void addCarrierWithAnchor(RobotController rc) throws GameActionException{
-        Message msg = new Message(CARRIER_WITH_ANCHOR_IDX, rc.getID(), RobotPlayer.turnCount);
+    static void addCarrierWithAnchor(RobotController rc, int ID) throws GameActionException{
+        Message msg = new Message(CARRIER_WITH_ANCHOR_IDX, ID, RobotPlayer.turnCount);
         messagesQueue.add(msg);
     } /**Should probably make a method to delete it after it no longer needs protection, we'll see how it goes*/
 
