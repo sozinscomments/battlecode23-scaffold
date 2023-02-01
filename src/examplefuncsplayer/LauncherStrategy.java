@@ -2,9 +2,6 @@ package examplefuncsplayer;
 
 import battlecode.common.*;
 
-
-import static examplefuncsplayer.RobotPlayer.rng;
-
 public class LauncherStrategy {
 
     /**
@@ -92,9 +89,7 @@ public class LauncherStrategy {
                     if (rc.readSharedArray(i)!=0) { /**Not totally sure how the locations are stored in the communication array, it also might break when the HQ is at 0,0 but we probably dont need to worry*/
                         MapLocation HQlocation = Communication.intToLocation(rc, rc.readSharedArray(i));
                         MapLocation fullMap = new MapLocation(rc.getMapWidth(),rc.getMapHeight());
-                        int randomXShift = rng.nextBoolean() ? -5 : 5;
-                        int randomYShift = rng.nextBoolean() ? -5 : 5;
-                        MapLocation leadingLocation = fullMap.translate((-1*HQlocation.x-1+randomXShift),(-1*HQlocation.y-1+randomYShift)); /**Should have target location a few units away from HQ so they swarm without taking damage*/
+                        MapLocation leadingLocation = fullMap.translate((-1*HQlocation.x-1),(-1*HQlocation.y-1));
                         Pathing.moveTowards(rc,leadingLocation);
                         rc.setIndicatorString("I'm the leader! AND IM HEADING FOR: " + leadingLocation);
                         return;
@@ -156,7 +151,7 @@ public class LauncherStrategy {
         }
 
         // Also try to move randomly.
-        Direction dir = RobotPlayer.directions[rng.nextInt(RobotPlayer.directions.length)];
+        Direction dir = RobotPlayer.directions[RobotPlayer.rng.nextInt(RobotPlayer.directions.length)];
         if (rc.canMove(dir)) {
             rc.move(dir);
             rc.setIndicatorString("Moving Randomly for no fucking reason");
