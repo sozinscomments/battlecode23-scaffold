@@ -19,14 +19,24 @@ public class DestabilizerStrategy {
         // next island!
         for (int i = 0; i < islandLocs.size(); i++) {
             islandLoc = islandLocs.get(i);
+            checkDesAtIslands(rc);
             if (numOfDes.get(i) == 0)
                 RobotPlayer.moveTowards(rc, islandLoc);
-            else continue; // might be a redundant line of code.
+            if (numOfDes.get(i) == null) {
+                RobotPlayer.moveRandom(rc);
+            }
         }
     }
 
     static void checkDesAtIslands(RobotController rc) throws GameActionException {
         for (int i = 0; i < islandLocs.size(); i++) {
+            RobotInfo[] robots = rc.senseNearbyRobots();
+            if ((rc.canSenseRobotAtLocation(islandLocs.get(i))) && (rc.senseRobotAtLocation(islandLocs.get(i)).getType() == RobotType.DESTABILIZER)) {
+                if (numOfDes.get(i) == null) {
+                    numOfDes.add(1);
+                }
+            }
+
             // not sure how to implement the idea of checking the number of destabilizers at a certain location.
         }
     }
@@ -36,7 +46,6 @@ public class DestabilizerStrategy {
         int[] ids = rc.senseNearbyIslands();
         for(int id: ids) {
             MapLocation[] locs = rc.senseNearbyIslandLocations(id);
-            if (locs[0].)
             if (locs.length > 0) {
                 islandLocs.add(locs[0]);
             }
