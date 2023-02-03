@@ -14,6 +14,7 @@ public class CarrierStrategy {
     static MapLocation islandLoc;
     static int islandLocIndex;
     static MapLocation oldIslandLoc;
+    static boolean searchForNewWell = true;
 
     static boolean anchorMode = false;
     static int numHeadquarters = 0;
@@ -29,13 +30,15 @@ public class CarrierStrategy {
             Communication.updateHeadquarterInfo(rc);
         }
         if(hqLoc == null) scanHQ(rc);
-        scanWells(rc); /**making this not conditional lets them go to other wells, but now they wont add reality anchors*/
+        if(searchForNewWell) scanWells(rc); /**making this not conditional lets them go to other wells, but now they wont add reality anchors*/
         scanIslands(rc);
 
         //Collect from well if close and inventory not full
         if(wellLoc != null) {
-            int distance = (int) Math.sqrt(rc.getLocation().distanceSquaredTo(wellLoc));
-            optimalAmount = getOptimalResourceCount(distance, well.isUpgraded());
+            if(searchForNewWell){
+                int distance = (int) Math.sqrt(rc.getLocation().distanceSquaredTo(wellLoc));
+                optimalAmount = getOptimalResourceCount(distance, well.isUpgraded());
+            }
             if(rc.canCollectResource(wellLoc, -1) && getTotalResources(rc) < optimalAmount) {
                 rc.collectResource(wellLoc, -1); /**MAYBE ITS TRYING TO COLLECT OPTIMAL AMOUNT EACH TIME AND GETTING CONFUSED?*/
             }
@@ -146,14 +149,27 @@ public class CarrierStrategy {
         else {
             int total = getTotalResources(rc);
             if(total == 0) {
+                rc.setIndicatorString("I'M IN THE LAST LOOP PT 1");
                 //move towards well or search for well
                 if(wellLoc == null) RobotPlayer.moveRandom(rc); //COULD BE COOL TO KEEP A LOG OF THE PREVIOUS STEPS TO MAKE REPEATING STEPS STOP HAPPENING
                 else if(!rc.getLocation().isAdjacentTo(wellLoc)) Pathing.moveTowards(rc, wellLoc);
             }
-            if (total==optimalAmount){ /**just changed this from else if to else*/
+            //else if (total<optimalAmount){
+            //    searchForNewWell=false;
+            //}
+            else if (total>=optimalAmount){
+                searchForNewWell=false;
+                rc.setIndicatorString("I'M IN THE LAST LOOP PT 2 AND MY WELLLOC IS " + wellLoc);
                 //move towards HQ
                 Pathing.moveTowards(rc, hqLoc);
             }
+            //else {
+
+            //}
+//            if (total==optimalAmount){ /**just changed this from else if to else*/
+//                //move towards HQ
+//                Pathing.moveTowards(rc, hqLoc);
+//            }
         }
         Communication.tryWriteMessages(rc);
     }
@@ -200,7 +216,10 @@ public class CarrierStrategy {
     static void depositResource(RobotController rc, ResourceType type) throws GameActionException {
         int amount = rc.getResourceAmount(type);
         if(amount > 0) {
-            if(rc.canTransferResource(hqLoc, type, amount)) rc.transferResource(hqLoc, type, amount);
+            if(rc.canTransferResource(hqLoc, type, amount)) {
+                rc.transferResource(hqLoc, type, amount);
+                searchForNewWell=true;
+            }
         }
     }
 

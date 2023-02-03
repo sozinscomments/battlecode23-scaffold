@@ -16,6 +16,7 @@ import java.util.Set;
  */
 public strictfp class RobotPlayer {
 
+    static boolean shouldBuildAnchor = true;
     static boolean noMoreCarriers = true;
     // Sean is a cutie.
     /**
@@ -123,6 +124,10 @@ public strictfp class RobotPlayer {
         } else if (turnCount == 2) {
             Communication.updateHeadquarterInfo(rc);
         }
+        if(rc.getRobotCount()<20){ /**Should be able to wiggle this parameter to increase the number of robots before it impliments anchor strats*/
+            shouldBuildAnchor=false;
+        } else shouldBuildAnchor=true;
+
 
         /*
         standard anchors - max health of 250, need 100kg of adamantium + 100kg of mana
@@ -149,7 +154,7 @@ public strictfp class RobotPlayer {
         }
         if (rc.canBuildAnchor(Anchor.STANDARD)) {
             System.out.println("THE CURRENT VALUE IN CARRIER WITH ANCHOR IS: " + rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX));
-            boolean shouldBuildAnchor = true;
+//            shouldBuildAnchor = true;
             int carrierWithAnchor = rc.readSharedArray(Communication.CARRIER_WITH_ANCHOR_IDX);
             if (carrierWithAnchor != 0){
                 shouldBuildAnchor = false;
@@ -180,14 +185,40 @@ public strictfp class RobotPlayer {
                 }
             }
         }
-        if (rng.nextBoolean() && rc.getRobotCount()<20) { /**THIS SECOND CONDITION MAKES YOU MORE LIKELY TO BUILD ANCHORS THAN JUST A BUNCH OF CARRIERS*/
-            // Let's try to build a carrier.
-            rc.setIndicatorString("Trying to build a carrier");
+        if(shouldBuildAnchor) {
+            if (rc.getResourceAmount(ResourceType.ADAMANTIUM)>=RobotType.CARRIER.buildCostAdamantium+100) { /**THIS SECOND CONDITION MAKES YOU MORE LIKELY TO BUILD ANCHORS THAN JUST A BUNCH OF CARRIERS*/
+                // Let's try to build a carrier.
+                rc.setIndicatorString("Trying to build a carrier");
+                if (rc.canBuildRobot(RobotType.CARRIER, newLoc)) {
+                    rc.buildRobot(RobotType.CARRIER, newLoc);
+                }
+            }
+            if(rc.getResourceAmount(ResourceType.MANA)>=(5 * RobotType.LAUNCHER.buildCostMana)+100) { /**IF ITS NOT MAKING ANCHORS, THIS COULD BE WHY*/
+                // Let's try to build a launcher.
+                if (rc.getActionCooldownTurns() != 0 || rc.getResourceAmount(ResourceType.MANA) < 5 * RobotType.LAUNCHER.buildCostMana) /**SEAN'S NOTE: This second condition is do we not have much mana compared to the amount it takes to build a launcher, can wiggle these parameters*/
+                    return;
+                int attempts = 0;
+                int numPlaced = 0;
+                while (numPlaced != 10 && attempts != 30){
+                    attempts++;
+                    if (rc.canBuildRobot(RobotType.LAUNCHER, newLoc)) {
+                        rc.buildRobot(RobotType.LAUNCHER, newLoc);
+                        numPlaced++;
+                    }
+                    else{
+                        dir = directions[rng.nextInt(directions.length)];
+                        newLoc = rc.getLocation().add(dir);
+                    }
+                }
+                rc.setIndicatorString("Trying to build a launcher");
+            }
+        }
+        else{
+            rc.setIndicatorString("NOT IN THE ANCHOR LOOP");
             if (rc.canBuildRobot(RobotType.CARRIER, newLoc)) {
                 rc.buildRobot(RobotType.CARRIER, newLoc);
             }
-        } else {
-            // Let's try to build a launcher.
+
             if (rc.getActionCooldownTurns() != 0 || rc.getResourceAmount(ResourceType.MANA) < 5 * RobotType.LAUNCHER.buildCostMana) /**SEAN'S NOTE: This second condition is do we not have much mana compared to the amount it takes to build a launcher, can wiggle these parameters*/
                 return;
             int attempts = 0;
@@ -203,8 +234,8 @@ public strictfp class RobotPlayer {
                     newLoc = rc.getLocation().add(dir);
                 }
             }
-            rc.setIndicatorString("Trying to build a launcher");
         }
+
         Communication.tryWriteMessages(rc);
 
     }

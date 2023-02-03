@@ -39,6 +39,8 @@ public class Pathing {
             }
         }
     }
+    static Direction currentDir = null;
+
     static void moveTowards(RobotController rc, MapLocation target) throws GameActionException {
         if (rc.getLocation().equals(target)) {
             return;
@@ -49,23 +51,23 @@ public class Pathing {
         Direction d = rc.getLocation().directionTo(target);
         if (rc.canMove(d)) {
             rc.move(d);
-            currentDirection = null; // there is no obstacle we're going around
+            currentDir = null; // there is no obstacle we're going around
         } else {
             // Going around some obstacle: can't move towards d because there's an obstacle there
             // Idea: keep the obstacle on our right hand
 
-            if (currentDirection == null) {
-                currentDirection = d;
+            if (currentDir == null) {
+                currentDir = d;
             }
             // Try to move in a way that keeps the obstacle on our right
             for (int i = 0; i < 8; i++) {
-                if (rc.canMove(currentDirection)) {
-                    rc.move(currentDirection);
-                    currentDirection = currentDirection.rotateRight();
+                if (rc.canMove(currentDir)) {
+                    rc.move(currentDir);
+                    currentDir = currentDir.rotateRight();
                     break;
                 } else {
-                    currentDirection = currentDirection.rotateLeft();
-                } /**Does this break with moving obsticles?? Also, lets try to impliment bug 1 or bug 2*/
+                    currentDir = currentDir.rotateLeft();
+                }
             }
         }
     }
